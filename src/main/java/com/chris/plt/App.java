@@ -2,16 +2,15 @@ package com.chris.plt;
 
 /**
  * Hello world!
- *
  */
-public class App 
+public class App
 {
-    public static void main( String[] args ) throws Exception
-    {
-        String path="D:\\Home\\Work\\IDEA\\JavaByteCodeTools\\target\\classes\\com\\chris\\plt\\$.class";
+	public static void main(String[] args) throws Exception
+	{
+		String path = "D:\\bytecodes\\TestClass.class";
 
-        ClassFile classFile = ByteCodeReader.read(path);
+		ClassFile classFile = ByteCodeReader.read(path);
 
-        System.out.println(classFile);
-    }
+		System.out.println(classFile);
+	}
 }

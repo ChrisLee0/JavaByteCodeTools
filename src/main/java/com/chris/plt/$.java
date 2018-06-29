@@ -3,13 +3,24 @@ package com.chris.plt;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.RandomAccess;
 
 public final class $
 {
-	public static DataInputStream getDataInputStream(String path) throws FileNotFoundException
+	public static DataInputStream getDataInputStream(String path)
 	{
-		DataInputStream inputStream=new DataInputStream(new FileInputStream(path));
-		return inputStream;
+		try
+		{
+			return new DataInputStream(new FileInputStream(path));
+		}
+		catch (FileNotFoundException e)
+		{
+			$.die("file not found:"+path);
+			return null;
+		}
+	}
+
+	public static void die(String message)
+	{
+		throw new RuntimeException(message);
 	}
 }
