@@ -12,20 +12,28 @@ public class ByteCodeReader
 
 		DataInputStream dataInputStream = $.getDataInputStream(path);
 
-
+		//读取魔数 class文件以0xCAFEBABE开头
 		int magicNum = dataInputStream.readInt();
 		if (magicNum != 0xCAFEBABE)
 			$.die("not a standard byte code file");
 		classFile.magic = magicNum;
 
+		//读取版本号
 		classFile.minorVersion = dataInputStream.readShort();
 		classFile.majorVersion = dataInputStream.readShort();
+		//读取常量池
 		classFile.constantPool = readConstantInfos(dataInputStream, dataInputStream.readShort());
+		//读取访问修饰标识
 		classFile.accessFlags = ClassFile.AccessFlag.getAccessFlags(dataInputStream.readShort());
+		//读取类名称
 		classFile.className = getClassName(dataInputStream.readShort(), classFile.constantPool, "class name index error");
+		//读取父类名称
 		classFile.superClassName = getClassName(dataInputStream.readShort(), classFile.constantPool, "super class name index error");
+		//读取实现接口
 		classFile.interfaces = readInterfaces(dataInputStream, dataInputStream.readShort(), classFile.constantPool);
+		//读取字段
 		classFile.fields = readFields(dataInputStream, dataInputStream.readShort(), classFile.constantPool);
+		//读取方法
 		classFile.methods = readMethods(dataInputStream, dataInputStream.readShort(), classFile.constantPool);
 
 		return classFile;
@@ -121,10 +129,10 @@ public class ByteCodeReader
 	private static String[] readInterfaces(DataInputStream dataInputStream, int interfaceCount, ConstantInfo[] constantPool) throws IOException
 	{
 		String[] interfaces = new String[interfaceCount];
+
 		for (int i = 0; i < interfaceCount; i++)
-		{
 			interfaces[i] = getClassName(dataInputStream.readShort(), constantPool, "interface name index error");
-		}
+
 		return interfaces;
 	}
 
@@ -159,7 +167,7 @@ public class ByteCodeReader
 			String methodName = getUtf8(dataInputStream.readShort(), constantPool, "method name index error");
 			String descriptorName = getUtf8(dataInputStream.readShort(), constantPool, "method descriptor index error");
 
-			$.die("");
+			int attrituteCount=dataInputStream.readShort();
 
 		}
 
