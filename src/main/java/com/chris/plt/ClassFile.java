@@ -9,7 +9,6 @@ public class ClassFile
 	int magic;
 	short minorVersion;
 	short majorVersion;
-	int constantPoolCount;
 	ConstantInfo[] constantPool;
 
 	List<AccessFlag> accessFlags;

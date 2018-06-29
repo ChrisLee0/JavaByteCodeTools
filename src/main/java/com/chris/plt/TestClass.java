@@ -11,7 +11,12 @@ public class TestClass implements Comparator<Integer>,Serializable
 
 	public int compare(Integer o1, Integer o2)
 	{
-		return 0;
+		return o1-o2;
+	}
+
+	public static boolean binarySearch()
+	{
+		return false;
 	}
 
 	enum Week

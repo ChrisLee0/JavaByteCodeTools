@@ -20,8 +20,7 @@ public class ByteCodeReader
 
 		classFile.minorVersion = dataInputStream.readShort();
 		classFile.majorVersion = dataInputStream.readShort();
-		classFile.constantPoolCount = dataInputStream.readShort();
-		classFile.constantPool = readConstantInfos(dataInputStream, classFile.constantPoolCount);
+		classFile.constantPool = readConstantInfos(dataInputStream, dataInputStream.readShort());
 		classFile.accessFlags = ClassFile.AccessFlag.getAccessFlags(dataInputStream.readShort());
 		classFile.className = getClassName(dataInputStream.readShort(), classFile.constantPool, "class name index error");
 		classFile.superClassName = getClassName(dataInputStream.readShort(), classFile.constantPool, "super class name index error");
@@ -47,46 +46,42 @@ public class ByteCodeReader
 		int length;
 		int index1;
 		int index2;
-		byte[] bytes;
 		Object value;
 
 		for (int i = 1; i < constantPoolCount; i++)
 		{
-			byte type = dataInputStream.readByte();
-
 			ConstantInfo constantInfo = null;
-
-			ConstantInfo.ConstantType typeEnum = ConstantInfo.ConstantType.getTypeEnum(type);
-			switch (typeEnum)
+			ConstantInfo.ConstantType constantType = ConstantInfo.ConstantType.getTypeEnum(dataInputStream.readByte());
+			switch (constantType)
 			{
 				case UTF8:
 					length = dataInputStream.readShort();
-					bytes = new byte[length];
+					byte[] bytes = new byte[length];
 					int len = dataInputStream.read(bytes);
 					if (len != length)
 						$.die("bad class file");
-					constantInfo = new ConstantInfo(typeEnum, new String(bytes, "UTF8"));
+					constantInfo = new ConstantInfo(constantType, new String(bytes, "UTF8"));
 					break;
 				case Integer:
 					value = dataInputStream.readInt();
-					constantInfo = new ConstantInfo(typeEnum, value);
+					constantInfo = new ConstantInfo(constantType, value);
 					break;
 				case Float:
 					value = dataInputStream.readFloat();
-					constantInfo = new ConstantInfo(typeEnum, value);
+					constantInfo = new ConstantInfo(constantType, value);
 					break;
 				case Long:
 					value = dataInputStream.readLong();
-					constantInfo = new ConstantInfo(typeEnum, value);
+					constantInfo = new ConstantInfo(constantType, value);
 					break;
 				case Double:
 					value = dataInputStream.readDouble();
-					constantInfo = new ConstantInfo(typeEnum, value);
+					constantInfo = new ConstantInfo(constantType, value);
 					break;
 				case Class:
 				case String:
 					index1 = dataInputStream.readShort();
-					constantInfo = new ConstantInfo(typeEnum, index1);
+					constantInfo = new ConstantInfo(constantType, index1);
 					break;
 				case Fieldref:
 				case Methodref:
@@ -94,7 +89,7 @@ public class ByteCodeReader
 				case NameAndType:
 					index1 = dataInputStream.readShort();
 					index2 = dataInputStream.readShort();
-					constantInfo = new ConstantInfo(typeEnum, index1, index2);
+					constantInfo = new ConstantInfo(constantType, index1, index2);
 					break;
 			}
 
@@ -139,11 +134,8 @@ public class ByteCodeReader
 		for (int i = 0; i < fieldCount; i++)
 		{
 			List<AccessFlag> accessFlags = AccessFlag.getAccessFlags(dataInputStream.readShort());
-			int nameIndex = dataInputStream.readShort();
-			String fieldName = getUtf8(nameIndex, constantPool, "field descriptor index error");
-
-			int descriptorIndex = dataInputStream.readShort();
-			String descriptorName = getUtf8(descriptorIndex, constantPool, "field descriptor index error");
+			String fieldName = getUtf8(dataInputStream.readShort(), constantPool, "field descriptor index error");
+			String descriptorName = getUtf8(dataInputStream.readShort(), constantPool, "field descriptor index error");
 
 			int attributeCount = dataInputStream.readShort();
 			for (int j = 0; j < attributeCount; j++)
@@ -164,11 +156,8 @@ public class ByteCodeReader
 		for (int i = 0; i < methodCount; i++)
 		{
 			List<AccessFlag> accessFlags = AccessFlag.getAccessFlags(dataInputStream.readShort());
-			int nameIndex = dataInputStream.readShort();
-			String methodName = getUtf8(nameIndex, constantPool, "method name index error");
-
-			int descriptorIndex = dataInputStream.readShort();
-			String descriptorName = getUtf8(descriptorIndex, constantPool, "method descriptor index error");
+			String methodName = getUtf8(dataInputStream.readShort(), constantPool, "method name index error");
+			String descriptorName = getUtf8(dataInputStream.readShort(), constantPool, "method descriptor index error");
 
 			$.die("");
 
